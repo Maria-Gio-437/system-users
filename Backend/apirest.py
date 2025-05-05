@@ -8,7 +8,7 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, methods=['GET', 'POST', 'PUT', 'DELETE'])
 app.config['SUPABASE_URL'] = os.getenv('SUPABASE_URL')
 app.config['SUPABASE_KEY'] = os.getenv('SUPABASE_KEY')
 
