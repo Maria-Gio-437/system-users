@@ -16,10 +16,10 @@ supabase = Supabase(app)
 @app.route('/usuarios', methods=['GET'])
 def listar_usuarios():
     resp = supabase.client.from_('usuarios').select('*').execute()
-    if resp.error is None:
+    if resp.data is not None:
         return jsonify(resp.data), 200
     else:
-        return jsonify({'error': resp.error}), 500
+        return jsonify({'error': 'Erro ao buscar usuários', 'details': resp}), 500
 
 # Criar usuário
 @app.route('/usuarios', methods=['POST'])
