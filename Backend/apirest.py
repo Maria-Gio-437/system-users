@@ -38,5 +38,9 @@ def excluir_usuario(id):
     resp = supabase.client.from_('usuarios').delete().eq('id', id).execute()
     return jsonify(resp.data), resp.status_code
 
+@app.route("/")
+def home():
+    return "API System Users está no ar!", 200
+
 if __name__ == '__main__':
     app.run(debug=True)
