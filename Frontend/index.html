@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerenciar Usuários</title>
+</head>
+<body>
+  <h1>Usuários</h1>
+  <form id="userForm">
+    <input type="hidden" id="userId">
+    <input type="text" id="nome" placeholder="Nome" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="senha" placeholder="Senha" required>
+    <button type="submit">Salvar</button>
+  </form>
+  <table id="usuariosTable">
+    <thead>
+      <tr><th>Nome</th><th>Email</th><th>Ações</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+<script>
+const API = 'https://system-users.onrender.com';
+
+function carregarUsuarios() {
+    fetch(`${API}/usuarios`)
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.querySelector('#usuariosTable tbody');
+      tbody.innerHTML = '';
+      data.forEach(u => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${u.nome}</td>
+            <td>${u.email}</td>
+            <td>
+              <button onclick="editar(${u.id},'${u.nome}','${u.email}')">Editar</button>
+              <button onclick="excluir(${u.id})">Excluir</button>
+            </td>
+          </tr>`;
+      });
+    });
+}
+
+document.getElementById('userForm').onsubmit = function(e) {
+  e.preventDefault();
+  const id = document.getElementById('userId').value;
+  const nome = document.getElementById('nome').value;
+  const email = document.getElementById('email').value;
+  const senha = document.getElementById('senha').value;
+  const metodo = id ? 'PUT' : 'POST';
+  const url = id ? `${API}/usuarios/${id}` : `${API}/usuarios`;
+  fetch(url, {
+    method: metodo,
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({nome, email, senha})
+  }).then(() => {
+    this.reset();
+    carregarUsuarios();
+  });
+};
+
+function editar(id, nome, email) {
+  document.getElementById('userId').value = id;
+  document.getElementById('nome').value = nome;
+  document.getElementById('email').value = email;
+}
+
+function excluir(id) {
+  fetch(`${API}/usuarios/${id}`, {method: 'DELETE'}).then(carregarUsuarios);
+}
+
+carregarUsuarios();
+</script>
+</body>
+</html>
