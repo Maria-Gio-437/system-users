@@ -49,7 +49,7 @@ def editar_usuario(id):
 @app.route('/usuarios/<int:id>', methods=['DELETE'])
 def excluir_usuario(id):
     resp = supabase.client.from_('usuarios').delete().eq('id', id).execute()
-    if resp.count > 0:
+    if resp.error is None:
         return jsonify({'message': 'Usuário excluído com sucesso'}), 200
     else:
         return jsonify({'error': 'Erro ao excluir usuário', 'details': resp}), 500
