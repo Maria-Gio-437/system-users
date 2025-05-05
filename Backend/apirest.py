@@ -48,11 +48,12 @@ def editar_usuario(id):
 # Excluir usuário
 @app.route('/usuarios/<int:id>', methods=['DELETE'])
 def excluir_usuario(id):
-    resp = supabase.client.from_('usuarios').delete().eq('id', id).execute()
-    if resp.error is None:
+    try:
+        resp = supabase.client.from_('usuarios').delete().eq('id', id).execute()
+        # Se chegamos aqui sem exceção, consideramos sucesso 
         return jsonify({'message': 'Usuário excluído com sucesso'}), 200
-    else:
-        return jsonify({'error': 'Erro ao excluir usuário', 'details': resp}), 500
+    except Exception as e:
+        return jsonify({'error': 'Erro ao excluir usuário', 'details': str(e)}), 500
 
 # Health check da conexão com o Supabase
 @app.route('/health', methods=['GET'])
