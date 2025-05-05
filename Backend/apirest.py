@@ -16,7 +16,10 @@ supabase = Supabase(app)
 @app.route('/usuarios', methods=['GET'])
 def listar_usuarios():
     resp = supabase.client.from_('usuarios').select('*').execute()
-    return jsonify(resp.data), resp.status_code
+    if resp.error is None:
+        return jsonify(resp.data), 200
+    else:
+        return jsonify({'error': resp.error}), 500
 
 # Criar usuário
 @app.route('/usuarios', methods=['POST'])
@@ -37,6 +40,19 @@ def editar_usuario(id):
 def excluir_usuario(id):
     resp = supabase.client.from_('usuarios').delete().eq('id', id).execute()
     return jsonify(resp.data), resp.status_code
+
+# Health check da conexão com o Supabase
+@app.route('/health', methods=['GET'])
+def health_check():
+    try:
+        # Tenta fazer uma consulta simples para verificar a conexão
+        resp = supabase.client.from_('usuarios').select('id').limit(1).execute()
+        if resp.data is not None:
+            return jsonify({'status': 'Conectado ao Supabase!'}), 200
+        else:
+            return jsonify({'status': 'Erro ao conectar ao Supabase', 'error': resp.error}), 500
+    except Exception as e:
+        return jsonify({'status': 'Erro inesperado ao conectar ao Supabase', 'error': str(e)}), 500
 
 @app.route("/")
 def home():
